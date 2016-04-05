@@ -6,9 +6,19 @@
 #include "bool.h"
 
 bool debug = true;
+typedef struct hE{
+	char *key;
+	vector *value;
+} hashelem_t;
+
+typedef struct vE{
+	char c;
+	int frecuency;
+} vecelem_t
 
 void usage(char *s);
-void groupWordsBy(FILE *fp, int k, char *word);
+void groupWordsBy(FILE *fp, int k, char *word, char *next);
+void getSeeds (char *fname, int k, hashset *seeds);
 
 int main(int argc, char **argv){
 	int k;
@@ -16,6 +26,7 @@ int main(int argc, char **argv){
 	int w;
 	FILE *fp;
 	char *word;
+	char next;
 
 	if(argc != 4){
 		usage(argv[0]);
@@ -30,8 +41,8 @@ int main(int argc, char **argv){
 	assert(fp != NULL && "file doesn't exist\n");
 	word = (char *) malloc(sizeof(char) * (k + 1));
 	while(!feof(fp)){
-		groupWordsBy(fp, k, word);
-		if(debug) printf("<< %s >>\n", word);
+		groupWordsBy(fp, k, word , &next);
+		if(debug) printf("<< %s : %c >>\n", word, next);
 	}
 
 	fclose(fp);
@@ -50,12 +61,22 @@ void usage(char *s){
 		);
 }
 
-void groupWordsBy(FILE *fp, int k, char *word){
+void groupWordsBy(FILE *fp, int k, char *word, char *next){
 	int i;
+	long file_pos;
+	file_pos = ftell(fp);
 	for(i = 0; i<k; i++){
-		word[i] = fgetc(fp);
+		if ((word[i] = fgetc(fp)) == EOF) break;
 	}
 	word[i] = '\0';
+	if(!feof(fp)) {
+		*next = fgetc(fp);
+		fseek(fp, file_pos + 1, SEEK_SET);
+	} 
+}
+
+getSeeds (char *fname, int k, hashset *seeds){
+
 }
 
 // nombre = (char *) malloc(sizeof(char) * (strlen(argv[2]) + 1));
