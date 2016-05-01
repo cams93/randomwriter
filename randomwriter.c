@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <unistd.h>
 #include "hashset.h"
 #include "vector.h"
 
@@ -251,6 +252,12 @@ int main(int argc,char **argv){
 	char *fname;
 	hashset seeds;
 
+	//check debugging
+	char *value;
+	if((value = getenv("RWDEBUG")) != NULL){
+		if(strcmp(value,"YES") == 0)
+			debug = true;
+	}
 
 	//Check the right input
 	if(argc != 4){
@@ -268,5 +275,9 @@ int main(int argc,char **argv){
 	generateseeds(fname,k,&seeds);
 	if(debug) HashSetMap(&seeds,printHashElems,stdout);
 	HashSetMap(&seeds,genLetters,NULL);
-	genrandomWords(&seeds,w);
+	while(true){
+		genrandomWords(&seeds,w);
+		sleep(5);
+	}
+	
 }
